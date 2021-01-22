@@ -53,3 +53,15 @@ class MyTest(TestCase):
         response = self.client.get("/api/v1/a")
         self.assertEquals(response.json,dict(message='Looks like short url is wrong..'))
 
+    def test_unique_url(self):
+        self.client.post("/api/v1/links", data=dict(url='http://example.com/'))
+        self.client.post("/api/v1/links", data=dict(url='http://example.com/'))
+        self.client.post("/api/v1/links", data=dict(url='http://example.com/'))
+        self.assertEquals(db.session.query(Link).count(),1)
+
+    def test_list_of_urls(self):
+        self.client.post("/api/v1/links", data=dict(url='http://example.com/'))
+        self.client.post("/api/v1/links", data=dict(url='http://example2.com/'))
+        response = self.client.get('/api/v1/links')
+        for i, item in enumerate(response.json):
+            self.assertEquals(item['id'], i+1)

@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask import redirect, abort
+from flask import redirect, abort, jsonify
 from urllib.parse import urlparse
 import datetime
 from ..models import Link
@@ -13,7 +13,10 @@ class UrlView(Resource):
         return all([result.scheme, result.netloc, result.path])
 
     def get(self):
-        abort(400, description="Only POST method allowed")
+        # for link in Link.query.all():
+        #     return LinkSchema().dump(link)
+        return jsonify(Link.query.all())
+        # abort(400, description="Only POST method allowed")
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -22,6 +25,8 @@ class UrlView(Resource):
         params = parser.parse_args()
         if not self.url_validator(params['url']):
             abort(422, description="Wrong input")
+        if Link.query.filter_by(url=params['url']).scalar():
+            return LinkSchema().dump(Link.query.filter_by(url=params['url']).first())
         if not 1 <= params['lifespan'] <= 365:
             params['lifespan'] = 90
         new_link = Link(url=params['url'], lifespan=params['lifespan'])

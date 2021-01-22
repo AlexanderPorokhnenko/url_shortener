@@ -1,9 +1,17 @@
 import string
 import datetime
+from dataclasses import dataclass
 from . import db
 
 
+@dataclass
 class Link(db.Model):
+    id: int
+    url: str
+    short_url: str
+    death_date: str
+    lifespan: int
+
     __tablename__ = 'Links'
     __table_args__ = {'sqlite_autoincrement': True}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

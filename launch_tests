@@ -1,0 +1,7 @@
+#!/bin/bash
+
+MAINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "${MAINDIR}/env/bin/activate"
+export FLASK_APP="__init__.py"
+export FLASK_CONFIG='test'
+nosetests
